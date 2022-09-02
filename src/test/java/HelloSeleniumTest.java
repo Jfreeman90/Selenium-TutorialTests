@@ -2,13 +2,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class HelloSeleniumTest {
@@ -28,6 +26,7 @@ public class HelloSeleniumTest {
         driver.quit();
     }
 
+    //all the tests
     @Test
     public void loginTest() {
         //define how long to wait before failing.
@@ -158,4 +157,34 @@ public class HelloSeleniumTest {
         //assert the type of padding
         Assert.assertEquals("Expected padding-box", "padding-box", clickableIcon.getCssValue("background-origin"));
     }
+
+    @Test
+    public void windowsFramesTest(){
+        //url being tested - starting point
+        driver.get("https://the-internet.herokuapp.com/windows");
+        //create a javascript execute.
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        //open a new window using the jse
+        jse.executeScript("window.open('https://the-internet.herokuapp.com/windows/new')");
+        //returns a unique identifier, so we can reference which tab/window is open
+        String firstWindow = driver.getWindowHandle();
+        // create a set of all unique identifiers for all tabs open
+        Set<String> handles = driver.getWindowHandles();
+        //remove the original tab id from all the handles set.
+        handles.remove(firstWindow);
+        //get the second window unique ID
+        String secondWindow=String.valueOf(handles.iterator().next());
+        //switch to the tab that opened
+        driver.switchTo().window(secondWindow);
+        //assert the new window is correct
+        Assert.assertEquals("New Window", driver.getTitle());
+        //close the second window
+        driver.close();
+        //switch focus back to the original window
+        driver.switchTo().window(firstWindow);
+        //check the title of the original window is correct
+        Assert.assertEquals("The Internet", driver.getTitle());
+    }
+
+
 }
