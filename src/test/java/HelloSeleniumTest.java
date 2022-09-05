@@ -159,7 +159,7 @@ public class HelloSeleniumTest {
     }
 
     @Test
-    public void windowsFramesTest(){
+    public void windowTabsTest(){
         //url being tested - starting point
         driver.get("https://the-internet.herokuapp.com/windows");
         //create a javascript execute.
@@ -186,5 +186,53 @@ public class HelloSeleniumTest {
         Assert.assertEquals("The Internet", driver.getTitle());
     }
 
+    @Test
+    public void nestedFramesTest(){
+        //url being tested - starting point
+        driver.get("https://the-internet.herokuapp.com/nested_frames");
+
+        //check the top frame has loaded correctly
+        driver.switchTo().defaultContent();
+        Assert.assertTrue(driver.findElement(By.name("frame-top")).getSize().height>0);
+
+        //switch to a different frame using an index starting at 0
+        driver.switchTo().frame(1);
+        //assert we are in the bottom frame of the window
+        Assert.assertEquals("BOTTOM", driver.findElement(By.tagName("body")).getText());
+
+        //switch to the main frame (window)
+        driver.switchTo().parentFrame();
+        //switch into the top frame then into the left frame of the top frame
+        driver.switchTo().frame("frame-top");
+        driver.switchTo().frame("frame-left");
+        //assert we are in the left frame of the top frame
+        Assert.assertEquals("LEFT", driver.findElement(By.tagName("body")).getText());
+    }
+
+    @Test
+    public void alertsTest(){
+        //url being tested - starting point
+        driver.get("https://the-internet.herokuapp.com/javascript_alerts");
+
+        //go to the JS alert and click it
+        driver.findElement(By.xpath("//*[contains(normalize-space(text()), 'Click for JS Alert')]")).click();
+        driver.switchTo().alert().dismiss();
+
+        //go to the JS confirm and click it and press ok on the alert
+        driver.findElement(By.xpath("//*[contains(normalize-space(text()), 'Click for JS Confirm')]")).click();
+        driver.switchTo().alert().accept();
+
+        //go to the JS prompt and enter a text string
+        driver.findElement(By.xpath("//*[contains(normalize-space(text()), 'Click for JS Prompt')]")).click();
+        Alert promptAlert= driver.switchTo().alert();
+        promptAlert.sendKeys("This is a test alert string");
+        promptAlert.accept();
+        WebElement result=driver.findElement(By.id("result"));
+        //assert the result has been updated
+        Assert.assertEquals("You entered: This is a test alert string", result.getText());
+
+
+
+    }
 
 }
