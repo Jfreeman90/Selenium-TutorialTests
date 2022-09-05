@@ -234,5 +234,43 @@ public class HelloSeleniumTest {
 
 
     }
+    
+    @Test
+    public void focusTest(){
+        //url being tested - starting point
+        driver.get("https://example.cypress.io/commands/actions");
+
+        //find the password input
+        WebElement passwordInput=driver.findElement(By.cssSelector(".action-focus"));
+        Actions actions = new Actions(driver);
+        actions.moveToElement(passwordInput).click().perform();
+
+        //assert that the correct input box has been selected and highlighted orange
+        Assert.assertTrue(driver.findElement(By.xpath("//*[@for='password1']")).getAttribute("style").contains("color: orange"));
+    }
+
+    @Test
+    public void cookiesTest(){
+        //url being tested - starting point
+        driver.get("https://example.cypress.io/commands/cookies");
+
+        //find the correct cookie button and click it to set a cookie
+        WebElement setCookieButton=driver.findElement(By.cssSelector(".set-a-cookie"));
+        setCookieButton.click();
+
+        //assert the cookie value is what is expected
+        var cookie=driver.manage().getCookieNamed("token");
+        Assert.assertEquals("123ABC", cookie.getValue());
+    }
+
+    @Test
+    public void scrollToBottom() throws InterruptedException{
+        //url being tested - starting point
+        driver.get("https://ultimateqa.com/complicated-page/");
+        //create a javascript execute.
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        Thread.sleep(1000);
+    }
 
 }
