@@ -5,7 +5,10 @@ import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -271,6 +274,31 @@ public class HelloSeleniumTest {
         JavascriptExecutor jse = (JavascriptExecutor) driver;
         jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
         Thread.sleep(1000);
+    }
+
+    @Test
+    public void implicitWaitHiddenElementTest(){
+        // FALSE POSITIVE BECAUSE THE VALUE HASNT BEEN SHOWN IT IS STILL HIDDEN
+        //url being tested - starting point
+        driver.get("https://the-internet.herokuapp.com/dynamic_loading/1");
+        driver.findElement(By.id("finish"));
+    }
+
+    @Test(expected = TimeoutException.class)
+    public void configuredImplicitWaitHiddenElementTest(){
+        // CORRECT WAY TO FIND HIDDEN ELEMENTS WITHOUT FALSE POSITIVES
+        //url being tested - starting point
+        driver.get("https://the-internet.herokuapp.com/dynamic_loading/1");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("finish")));
+    }
+
+    @Test
+    public void explicitWaitHiddenElementTest(){
+        //url being tested - starting point
+        driver.get("https://the-internet.herokuapp.com/dynamic_loading/1");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("finish")));
     }
 
 }
